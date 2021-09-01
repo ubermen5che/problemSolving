@@ -2,10 +2,10 @@ package prob9020;
 
 //골드바흐의 추측
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+
 import java.util.Collections;
 
 public class Main {
@@ -13,35 +13,51 @@ public class Main {
     static boolean[] primeArr = new boolean[10001];
 
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            OutputStream outputStream = new FileOutputStream("/Users/yong/github/PS/baekjoon/prob9020/correct.txt");
 
-        int N = Integer.parseInt(bf.readLine());
-        ArrayList<Integer> inputs = new ArrayList<>();
+            BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
 
-        for (int i = 0; i < N; i++){
-            inputs.add(Integer.parseInt(bf.readLine()));
-        }
+            //int N = Integer.parseInt(bf.readLine());
+            ArrayList<Integer> inputs = new ArrayList<>();
 
-        primeSieve(10000);
+            int cnt = 2;
 
-        //입력값에 대해 2로 나눈 값이 소수라면 해이다.
-        for (int t = 0; t < N; t++){
-            int input = inputs.get(t);
-            if (primeArr[input/2]) {
-                System.out.println(input / 2 + " " + input / 2);
-                continue;
+            while (true) {
+                if (2 * cnt <= 10000)
+                    inputs.add(2 * cnt);
+                else
+                    break;
+                cnt++;
             }
 
-            for (int i = input / 2; i >= 2; i--){
-                if (primeArr[i]){
-                    int right = input - i;
-                    if (primeArr[right]){
-                        System.out.println(i + " " + right);
-                        break;
-                    }
-                } else
+            primeSieve(10000);
+
+            //입력값에 대해 2로 나눈 값이 소수라면 해이다.
+            for (int t = 0; t < 10000; t++) {
+                int input = inputs.get(t);
+                if (primeArr[input / 2]) {
+                    String str = input / 2 + " " + input / 2 + "\n";
+                    byte[] by = str.getBytes(StandardCharsets.UTF_8);
+                    outputStream.write(by);
                     continue;
+                }
+
+                for (int i = input / 2; i >= 2; i--) {
+                    if (primeArr[i]) {
+                        int right = input - i;
+                        if (primeArr[right]) {
+                            String str = i + " " + right + "\n";
+                            byte[] by = str.getBytes(StandardCharsets.UTF_8);
+                            outputStream.write(by);
+                            break;
+                        }
+                    } else
+                        continue;
+                }
             }
+        } catch (Exception e){
+            e.getStackTrace();
         }
     }
 
